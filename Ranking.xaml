@@ -1,0 +1,72 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" FontFamily="Segoe UI, Microsoft YaHei UI" FontSize="12" Foreground="#EEF1F4" UseLayoutRounding="True">
+ <UserControl.Resources>
+  <GridLength x:Key="IconWidth">29</GridLength>
+  <GridLength x:Key="CpuWidth">56</GridLength>
+  <GridLength x:Key="RamWidth">77</GridLength>
+  <GridLength x:Key="GpuWidth">54</GridLength>
+  <GridLength x:Key="RailWidth">10</GridLength>
+  <Thickness x:Key="CellInset">7,0</Thickness>
+  <Style TargetType="Button">
+   <Setter Property="Margin" Value="0,0,-6,0"/>
+   <Setter Property="FocusVisualStyle"><Setter.Value><Style TargetType="Control"><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Control"><Border CornerRadius="7" BorderThickness="1" BorderBrush="#9EFFFFFF"/></ControlTemplate></Setter.Value></Setter></Style></Setter.Value></Setter>
+   <Setter Property="Foreground" Value="#A8B1BC"/><Setter Property="Background" Value="Transparent"/>
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="Button">
+    <Border x:Name="box" Background="{TemplateBinding Background}" CornerRadius="7" Padding="6,3"><ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+    <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="box" Property="Background" Value="#38FFFFFF"/><Setter Property="Foreground" Value="White"/></Trigger></ControlTemplate.Triggers>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+  <Style TargetType="ListBoxItem"><Setter Property="HorizontalContentAlignment" Value="Stretch"/><Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem">
+   <Border x:Name="row" Background="Transparent" CornerRadius="7" Padding="{StaticResource CellInset}"><ContentPresenter/></Border>
+   <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="row" Property="Background" Value="#38FFFFFF"/></Trigger><Trigger Property="IsSelected" Value="True"><Setter TargetName="row" Property="Background" Value="#42FFFFFF"/></Trigger></ControlTemplate.Triggers>
+  </ControlTemplate></Setter.Value></Setter></Style>
+  <ControlTemplate x:Key="PageArea" TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate>
+  <Style x:Key="ProcessScrollBar" TargetType="ScrollBar">
+   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ScrollBar">
+    <Track x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="True">
+     <Track.Resources><sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="{x:Static SystemParameters.VerticalScrollBarButtonHeightKey}">48</sys:Double></Track.Resources>
+     <Track.DecreaseRepeatButton><RepeatButton Command="ScrollBar.PageUpCommand" Template="{StaticResource PageArea}"/></Track.DecreaseRepeatButton>
+     <Track.Thumb><Thumb><Thumb.Template><ControlTemplate TargetType="Thumb">
+      <Grid Background="Transparent"><Border Width="3" CornerRadius="1.5" Background="#90CDD1D5"/></Grid>
+     </ControlTemplate></Thumb.Template></Thumb></Track.Thumb>
+     <Track.IncreaseRepeatButton><RepeatButton Command="ScrollBar.PageDownCommand" Template="{StaticResource PageArea}"/></Track.IncreaseRepeatButton>
+    </Track>
+   </ControlTemplate></Setter.Value></Setter>
+  </Style>
+ </UserControl.Resources>
+ <Border CornerRadius="19" BorderThickness="1" Padding="14,10,13,9">
+  <Border.BorderBrush><LinearGradientBrush StartPoint="0,0" EndPoint="1,1"><GradientStop Color="#A5FFFFFF"/><GradientStop Offset=".36" Color="#46FFFFFF"/><GradientStop Offset="1" Color="#75FFFFFF"/></LinearGradientBrush></Border.BorderBrush>
+  <Border.Background><LinearGradientBrush StartPoint="0,0" EndPoint=".2,1"><GradientStop Color="#DC373839"/><GradientStop Offset=".15" Color="#D81F2022"/><GradientStop Offset=".84" Color="#D81B1C1E"/><GradientStop Offset="1" Color="#DF292A2C"/></LinearGradientBrush></Border.Background>
+  <Grid><Grid.RowDefinitions><RowDefinition Height="32"/><RowDefinition Height="32"/><RowDefinition/></Grid.RowDefinitions>
+   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><TextBlock Text="进程活动" FontSize="14" FontWeight="SemiBold"/><TextBlock x:Name="count" Foreground="#B9BABC" Margin="9,1,0,0" VerticalAlignment="Center" FontSize="11"/></StackPanel>
+   <Grid Grid.Row="1"><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="{StaticResource RailWidth}"/></Grid.ColumnDefinitions>
+   <Grid Margin="{StaticResource CellInset}" VerticalAlignment="Center"><Grid.ColumnDefinitions><ColumnDefinition Width="{StaticResource IconWidth}"/><ColumnDefinition/><ColumnDefinition Width="{StaticResource CpuWidth}"/><ColumnDefinition Width="{StaticResource RamWidth}"/><ColumnDefinition Width="{StaticResource GpuWidth}"/></Grid.ColumnDefinitions>
+    <TextBlock Grid.Column="1" Text="进程 / PID" VerticalAlignment="Center" Foreground="#B7B9BB" FontSize="10.5"/>
+    <Button Grid.Column="2" x:Name="cpuTab" HorizontalAlignment="Right" Cursor="Hand"><StackPanel Orientation="Horizontal"><Ellipse Width="4" Height="4" Fill="#9EF4EA" Margin="0,0,4,0"/><TextBlock x:Name="cpuHead" FontWeight="SemiBold" FontSize="10.5"/></StackPanel></Button>
+    <Button Grid.Column="3" x:Name="ramTab" HorizontalAlignment="Right" Cursor="Hand"><StackPanel Orientation="Horizontal"><Ellipse Width="4" Height="4" Fill="#DCC9FF" Margin="0,0,4,0"/><TextBlock x:Name="ramHead" FontWeight="SemiBold" FontSize="10.5"/></StackPanel></Button>
+    <Button Grid.Column="4" x:Name="gpuTab" HorizontalAlignment="Right" Cursor="Hand"><StackPanel Orientation="Horizontal"><Ellipse Width="4" Height="4" Fill="#FFD7B3" Margin="0,0,4,0"/><TextBlock x:Name="gpuHead" FontWeight="SemiBold" FontSize="10.5"/></StackPanel></Button>
+   </Grid></Grid>
+   <ListBox Grid.Row="2" x:Name="list" Background="Transparent" Foreground="#ECF0F3" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" VirtualizingStackPanel.VirtualizationMode="Recycling">
+    <ListBox.Template><ControlTemplate TargetType="ListBox">
+     <ScrollViewer x:Name="PART_ScrollViewer" CanContentScroll="True" Focusable="False">
+      <ScrollViewer.Template><ControlTemplate TargetType="ScrollViewer">
+       <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="{StaticResource RailWidth}"/></Grid.ColumnDefinitions>
+        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" Content="{TemplateBinding Content}"/>
+        <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Orientation="Vertical" Style="{StaticResource ProcessScrollBar}" Maximum="{TemplateBinding ScrollableHeight}" ViewportSize="{TemplateBinding ViewportHeight}" Value="{Binding VerticalOffset,RelativeSource={RelativeSource TemplatedParent},Mode=OneWay}"/>
+       </Grid>
+      </ControlTemplate></ScrollViewer.Template>
+      <ItemsPresenter/>
+     </ScrollViewer>
+    </ControlTemplate></ListBox.Template>
+    <ListBox.ItemTemplate><DataTemplate><Grid Height="36"><Grid.ColumnDefinitions><ColumnDefinition Width="{StaticResource IconWidth}"/><ColumnDefinition/><ColumnDefinition Width="{StaticResource CpuWidth}"/><ColumnDefinition Width="{StaticResource RamWidth}"/><ColumnDefinition Width="{StaticResource GpuWidth}"/></Grid.ColumnDefinitions>
+     <Image Width="19" Height="19" HorizontalAlignment="Left" Source="{Binding Icon}" RenderOptions.BitmapScalingMode="HighQuality"/>
+     <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,5,0"><TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Name}"/><TextBlock Text="{Binding Pid}" FontSize="10" Foreground="#96A4AF"/></StackPanel>
+     <TextBlock Grid.Column="2" Text="{Binding Cpu}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+     <TextBlock Grid.Column="3" Text="{Binding Ram}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+     <TextBlock Grid.Column="4" Text="{Binding Gpu}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+     <Border Grid.Column="{Binding BarColumn}" Width="{Binding BarWidth}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,5" Height="2" Background="{Binding Accent}" CornerRadius="1"/>
+    </Grid></DataTemplate></ListBox.ItemTemplate>
+   </ListBox>
+  </Grid>
+ </Border>
+</UserControl>
+
