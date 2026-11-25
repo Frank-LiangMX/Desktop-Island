@@ -55,7 +55,7 @@ internal sealed partial class Dashboard : Form {
         b.Text=caption;b.FlatStyle=FlatStyle.Flat;b.BackColor=Color.FromArgb(239,246,252);b.ForeColor=ink;
         b.FlatAppearance.BorderColor=Color.White;b.Cursor=Cursors.Hand;Controls.Add(b);
     }
-    static GraphicsPath Shape(RectangleF r,float radius){
+    internal static GraphicsPath Shape(RectangleF r,float radius){
         float d=radius*2;var p=new GraphicsPath();
         p.AddArc(r.X,r.Y,d,d,180,90);p.AddArc(r.Right-d,r.Y,d,d,270,90);
         p.AddArc(r.Right-d,r.Bottom-d,d,d,0,90);p.AddArc(r.X,r.Bottom-d,d,d,90,90);p.CloseFigure();return p;

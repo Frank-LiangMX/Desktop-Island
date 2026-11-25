@@ -8,8 +8,8 @@ using System.Windows.Media;
 namespace Pulse {
 internal sealed class GlassMenu {
     readonly ContextMenu menu;
-    readonly MenuItem mode,pin,start,shortcut,focus;
-    internal GlassMenu(Action toggle,Action togglePin,Action toggleStart,Action agents,Action configureShortcut,Action toggleFocus,Action exit) {
+    readonly MenuItem mode,pin,start,shortcut,focus,record;
+    internal GlassMenu(Action toggle,Action togglePin,Action toggleStart,Action agents,Action configureShortcut,Action toggleFocus,Action screenshot,Action recording,Action exit) {
         menu=(ContextMenu)XamlReader.Parse(@"
 <ContextMenu xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
  xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml' HasDropShadow='False'
@@ -41,6 +41,7 @@ internal sealed class GlassMenu {
  </ContextMenu.Resources>
 </ContextMenu>");
         Add("打开活动中心","\uE8BD",agents);
+        Add("截图…","\uE722",screenshot);record=Add("录屏…","\uE714",recording);
         mode=Add("打开详细趋势","\uE9D9",toggle);pin=Add("小组件置顶","\uE718",togglePin);
         focus=Add("开始专注 · 25 分钟","\uE916",toggleFocus);
         shortcut=Add("唤出快捷键","\uE765",configureShortcut);
@@ -49,7 +50,8 @@ internal sealed class GlassMenu {
     MenuItem Add(string label,string glyph,Action action){
         var item=new MenuItem{Header=label,Tag=glyph};item.Click+=(s,e)=>action();menu.Items.Add(item);return item;
     }
-    public void Show(System.Drawing.Point screen,float dpi,bool compact,bool pinned,bool startup,string hotkey,bool focusing){
+    public void Show(System.Drawing.Point screen,float dpi,bool compact,bool pinned,bool startup,string hotkey,bool focusing,string recordLabel){
+        record.Header=recordLabel;
         focus.Header=focusing?"结束专注":"开始专注 · 25 分钟";
         shortcut.Header="唤出快捷键 · "+hotkey;
         mode.Header=compact?"打开详细趋势":"返回桌面小组件";pin.IsChecked=pinned;start.IsChecked=startup;

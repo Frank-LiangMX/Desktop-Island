@@ -70,8 +70,8 @@ internal sealed partial class Dashboard {
         RefreshSurface();
     }
     void PaintWorkbench(Graphics g,Size size){
-        int w=size.Width,added=w-widgetSize.Width;
-        var saved=g.Save();g.SetClip(new Rectangle(0,0,Math.Max(0,added),68));
+        int w=size.Width,added=w-spread-widgetSize.Width;
+        var saved=g.Save();g.SetClip(new Rectangle(0,0,Math.Max(0,added),68),CombineMode.Intersect);
         g.TranslateTransform(added-detailWidth,0);
         Surface(g,new Rectangle(9,16,195,37),16,Color.FromArgb(132,27,32,39));
         for(int i=0;i<(ShowFileTab?4:3);i++){
@@ -83,8 +83,8 @@ internal sealed partial class Dashboard {
         }
         g.Restore(saved);
         saved=g.Save();
-        using(var outline=Shape(new RectangleF(1,1,w-2,size.Height-2),20))g.SetClip(outline);
-        Surface(g,new Rectangle(7,70,w-14,workHeight-77),16,Color.FromArgb(206,25,29,35));
+        int inset=7+(int)Math.Ceiling(Math.Min(spread*.20f,5)*Math.Max(joinTop,joinBottom));
+        Surface(g,new Rectangle(inset,70,w-2*inset,workHeight-77-(joinTop>0?2:0)),16,Color.FromArgb(206,25,29,35));
         var fg=Color.FromArgb(242,245,246);var dim=Color.FromArgb(181,190,197);
         if(section==Section.Processes){PaintProcesses(g,w,fg,dim);g.Restore(saved);return;}
         string heading=section==Section.AI?"会话活动":section==Section.Messages?"通知回看":section==Section.Files?"内容暂存":"正在播放";

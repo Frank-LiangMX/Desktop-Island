@@ -119,16 +119,40 @@ internal sealed partial class Dashboard {
             double ms=flip.Elapsed.TotalMilliseconds;
             if(ms<260){
                 float t=MotionEase(ms/320,.22,1,.36,1);
-                DrawFace(g,oldFace,x,82*t,1-t,-4*t);
+                DrawFace(g,oldFace,x,82*t,(1-t)*(1-side),-4*t);
             }else{
                 float t=1-MotionEase((ms-260)/280,.22,1,.36,1);
-                DrawFace(g,tickerFace,x,58*t,1-t,-8*t);
+                DrawFace(g,tickerFace,x,58*t,(1-t)*(1-side),-8*t);
             }
-        }else g.DrawImageUnscaled(tickerFace,x,0);
-        if(!expanded && desktop!=null && desktop.HasUnread && displayedMessage==null)
+        }else if(side<=0)g.DrawImageUnscaled(tickerFace,x,0);
+        else if(side<1)DrawFace(g,tickerFace,x,0,1-side,0);
+        if(side>0){
+            string badge=displayedMessage!=null || unreadSummary?"消息":focusCard?"专注":displayedSong!=null?"音乐":displayedActivity!=null?"会话":"概览";
+            string detail=displayedMessage!=null || unreadSummary?desktop.UnreadCount.ToString():focusCard?"计时":displayedActivity!=null && displayedActivity.state=="等你确认"?"待办":"";
+            var ink=Color.FromArgb((int)(255*side),aiMint);
+            int topX=(int)Mix(x+8,0,side);
+            WorkText(g,badge,topX,6,railWidth,22,12,ink,true,false,true);
+            if(detail.Length>0)WorkText(g,detail,topX+3,26,railWidth-21,24,12,Color.FromArgb((int)(245*side),Color.White),true,false,true);
+            PaintFoldArrow(g,topX+(detail.Length==0?railWidth/2:railWidth-12),38,side);
+        }
+        if(side<1 && !expanded && desktop!=null && desktop.HasUnread && displayedMessage==null)
             Dot(g,x+151,header/2-14,4,aiMint);
-        float tip=x+(expanded?157:151),tail=x+(expanded?152:156);
-        using(var pen=new Pen(Color.FromArgb(210,255,255,255),1.5f))g.DrawLines(pen,new[]{new PointF(tail,header/2-4),new PointF(tip,header/2),new PointF(tail,header/2+4)});
+        if(side<1)PaintFoldArrow(g,x+154,header/2,1-side);
+    }
+    static float FoldAngle(int horizontal,int vertical,float open){
+        // Side docking takes precedence at corners, matching the vertical rail.
+        float inward=horizontal<0?0:horizontal>0?180:vertical<0?90:vertical>0?-90:180;
+        return inward+180*open;
+    }
+    void PaintFoldArrow(Graphics g,int x,int y,float opacity){
+        float open=resizeFrames.Enabled?Math.Max(0,Math.Min(1,(BodyWidth-widgetSize.Width)/(float)detailWidth)):(expanded?1:0);
+        var state=g.Save();
+        g.TranslateTransform(x,y);g.RotateTransform(FoldAngle(dockX,dockY,open));
+        using(var pen=new Pen(Color.FromArgb((int)(210*opacity),255,255,255),1.5f)){
+            pen.StartCap=pen.EndCap=LineCap.Round;pen.LineJoin=LineJoin.Round;
+            g.DrawLines(pen,new[]{new PointF(-2.5f,-4),new PointF(2.5f,0),new PointF(-2.5f,4)});
+        }
+        g.Restore(state);
     }
     void PaintCompactFace(Graphics g,long now,bool unreadSummary){
         string label,detail;int x=11;

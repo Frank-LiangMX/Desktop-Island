@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -11,19 +11,15 @@ namespace Pulse {
 internal sealed class GlassLens : IDisposable {
     const int Margin=14;
     readonly Bitmap scene,material,mist;
-    readonly GraphicsPath silhouette=new GraphicsPath();
     readonly int[] source;
     public GlassLens(Size size){
         int w=size.Width,h=size.Height;
         scene=new Bitmap(w+Margin*2,h+Margin*2,PixelFormat.Format32bppRgb);
         material=new Bitmap(w,h,PixelFormat.Format32bppPArgb);
         mist=new Bitmap((w+15)/16+1,2,PixelFormat.Format32bppPArgb);
-        silhouette.AddArc(1,1,40,40,180,90);silhouette.AddArc(w-41,1,40,40,270,90);
-        silhouette.AddArc(w-41,h-41,40,40,0,90);silhouette.AddArc(1,h-41,40,40,90,90);
-        silhouette.CloseFigure();
         source=new int[scene.Width*scene.Height];
     }
-    public void Capture(Point location){
+    public void Capture(Point location,RectangleF bounds){
         Point origin=new Point(location.X-Margin,location.Y-Margin);
         var visible=Rectangle.Intersect(new Rectangle(origin,scene.Size),SystemInformation.VirtualScreen);
         if(visible.IsEmpty || visible.Width<=1 || visible.Height<=1)return;
@@ -50,6 +46,7 @@ internal sealed class GlassLens : IDisposable {
                 mist.SetPixel(x,row,count==0?Color.Transparent:Color.FromArgb(66,red/count,green/count,blue/count));
             }
         }
+        using(var silhouette=Dashboard.Shape(bounds,20))
         using(var layer=Graphics.FromImage(material))
         using(var fog=new TextureBrush(mist,WrapMode.Clamp)){
             layer.Clear(Color.Transparent);layer.SmoothingMode=SmoothingMode.AntiAlias;
@@ -72,7 +69,7 @@ internal sealed class GlassLens : IDisposable {
     void DrawSlice(Graphics g,int sx,int sw,int x,int width,int height){
         g.DrawImage(material,new Rectangle(x,0,width,height),sx,0,sw,height,GraphicsUnit.Pixel);
     }
-    public void Dispose(){scene.Dispose();mist.Dispose();material.Dispose();silhouette.Dispose();}
+    public void Dispose(){scene.Dispose();mist.Dispose();material.Dispose();}
 }
 }
 
